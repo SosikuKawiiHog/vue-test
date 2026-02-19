@@ -3,6 +3,7 @@
     <nav>
       <ul>
         <li><router-link to="/games">Список игр</router-link></li>
+        <li><router-link to="/developers">Список разработчиков</router-link></li>
         <li v-if="isAuthenticated && user"><router-link to="/my-reviews">Мои обзоры</router-link></li>
       </ul>
       <div v-if="isAuthenticated && user">
