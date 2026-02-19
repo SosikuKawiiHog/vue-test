@@ -1,7 +1,7 @@
 <template>
   <h2>Список игр</h2>
   <div v-if="games && games.length > 0">
-    <table>
+    <table class="w-full table-auto">
       <thead>
         <tr>
           <th>ID</th>
