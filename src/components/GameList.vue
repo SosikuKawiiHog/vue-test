@@ -1,31 +1,40 @@
 <template>
   <h2>Список игр</h2>
-  <div v-if="games && games.length > 0">
-    <table class="w-full table-auto">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Название</th>
-          <th>Описание</th>
-          <th>Дата выхода</th>
-          <th>Разработчик</th>
-          <th>Рейтинг пользователей</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="game in games" :key="game.id">
-          <td>{{ game.id }}</td>
-          <td>
-            <router-link :to="`/games/${game.id}`">{{game.title}}</router-link>
-          </td>
-          <td>{{game.description}}</td>
-          <td>{{formatDate(game.release_date)}}</td>
-          <td>{{game.developer.name}}</td>
-          <td>{{formatRating(game.user_score)}}</td>
-          <td></td>
-        </tr>
-      </tbody>
-    </table>
+  <div v-if="dataStore.games && dataStore.games.length > 0">
+    <DataTable
+        :value="dataStore.games"
+        :lazy="true"
+        :loading="dataStore.loading"
+        :paginator="true"
+        :rows="perpage"
+        :rowsPerPageOptions="[2,5,10]"
+        :totalRecords="dataStore.totalGames"
+        @page="onPageChange"
+        responsive-layout="scroll"
+        :first="offset"
+    >
+        <Column field="id" header="ID"></Column>
+        <Column header="Название">
+            <template #body="slotProps">
+                <router-link :to="`/games/${slotProps.data.id}`">
+                    {{slotProps.data.title}}
+                </router-link>
+            </template>
+        </Column>
+        <Column field="description" header="Описание"></Column>
+        <Column header="Дата выхода">
+            <template #body="slotProps">
+                {{formatDate(slotProps.data.release_date)}}
+            </template>
+        </Column>
+        <Column field="developer.name" header="Разработчик"></Column>
+        <Column header="Средняя оценка пользователей">
+            <template #body="slotProps">
+                {{formatRating(slotProps.data.user_score)}}
+            </template>
+        </Column>
+    </DataTable>
+    <h3>Всего игр: {{dataStore.totalGames}}</h3>
   </div>
   <div v-else>
     Загрузка...
@@ -33,11 +42,32 @@
 </template>
 
 <script>
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import {useDataStore} from '@/stores/dataStore.js';
 export default {
+    name: "GameList",
+    components: {DataTable, Column },
   data(){
     return {
-      games:[],
+      dataStore: useDataStore(),
+      perpage: 5,
+      offset: 0,
     }
+  },
+  computed:{
+    games(){
+      return this.dataStore.games;
+    },
+    games_total(){
+      return this.dataStore.totalGames;
+    }
+  },
+  mounted(){
+    console.log('GameList component mounted.');
+    this.dataStore.get_games();
+    this.dataStore.get_games_total();
+    console.log('GameList=', this.games);
   },
   methods:{
     formatDate(date){
@@ -48,16 +78,13 @@ export default {
     },
     formatRating(value){
       return value ? Number(value).toFixed(1) : '-';
+    },
+    onPageChange(event){
+      this.offset = event.first;
+      this.perpage = event.rows;
+      this.dataStore.get_games(this.offset / this.perpage, this.perpage);
     }
   },
-  async mounted(){
-    try{
-      const res = await fetch("http://127.0.0.1:8000/api/game");
-      this.games = await res.json();
-    } catch(err){
-      console.log(err);
-    }
-  }
 }
 </script>
 
