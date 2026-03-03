@@ -1,14 +1,14 @@
 <template>
-  <h2>Список разработчиков</h2>
+  <h2 class="mb-2">Список разработчиков</h2>
   <div v-if="developers && developers.length > 0">
-    <table>
-      <thead>
+    <table class="w-full overflow-hidden">
+      <thead class="dark:bg-gray-800">
       <tr>
         <th>ID</th>
         <th>Название</th>
       </tr>
       </thead>
-      <tbody>
+      <tbody class="divide-y divide-gray-200">
       <tr v-for="developer in developers" :key="developer.id">
         <td>{{ developer.id }}</td>
         <td>

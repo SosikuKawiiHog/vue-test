@@ -69,8 +69,13 @@ export default {
         },
         {
           label: 'Мои обзоры',
-          icon: 'pi pi-fw pi-pen-to-square',
+          icon: 'pi pi-fw pi-list',
           route: '/my-reviews',
+        },
+        {
+          label: 'Написать обзор',
+          icon: 'pi pi-fw pi-pen-to-square',
+          route: '/my-reviews/create'
         }
       ]
     };

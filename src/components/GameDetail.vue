@@ -1,5 +1,10 @@
 <template>
   <div v-if="dataStore.game && dataStore.game.id">
+    <div v-if="dataStore.game.cover_image" class="mb-6">
+      <img :src="'data:image/jpeg;base64,' + dataStore.game.cover_image" alt=""
+      class="max-w-2xl h-auto rounded-lg shadow-lg m-2">
+    </div>
+
     <h2 class="text-2xl font-bold mb-2">{{dataStore.game.title}}
       <span class="text-gray-500 font-normal">от {{dataStore.game.developer.name}}</span>
     </h2>
@@ -40,7 +45,11 @@
 
       <Column header="Скриншоты">
         <template #body="slotProps">
-          <div>ПОТОМ ДОБАВЛЮ</div>
+          <div class="flex gap-1 flex-wrap">
+            <img v-for="(src,inx) in parseScreenshots(slotProps.data.screenshots)"
+            :key="idx" :src="src" alt="" class="w-12 h-12 object-cover rounded cursor-pointer border border-gray-200 hover:border-blue-400 transition duration-150" @click="openModal(src)">
+            <span v-if="!parseScreenshots(slotProps.data.screenshots).length" class="text-gray-400 text-sm">---</span>
+          </div>
         </template>
       </Column>
 
@@ -50,6 +59,18 @@
         </template>
       </Column>
     </DataTable>
+
+    <Dialog
+      v-model:visible="modalVisible"
+      :modal="true"
+      :closable="true"
+      :draggable="false"
+      :resizable="false"
+      :showHeader="false"
+      class="p-0">
+      <img :src="modalImage" alt="full" class="max-w-full mah-h-hl rounded"/>
+    </Dialog>
+
   </div>
   <div v-else-if="dataStore.errorMessage">
     {{dataStore.errorMessage}}
@@ -62,15 +83,18 @@
 <script>
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import Dialog from "primevue/dialog"
 import {useDataStore} from '@/stores/dataStore.js';
 export default {
   name: "GameDetail",
-  components: {DataTable, Column },
+  components: {DataTable, Column, Dialog },
   data(){
     return {
       dataStore: useDataStore(),
       perpage: 5,
-      offset: 0
+      offset: 0,
+      modalVisible: false,
+      modalImage: '',
     }
   },
   computed:{
@@ -95,6 +119,20 @@ export default {
       this.offset = event.first;
       this.perpage = event.rows;
       this.dataStore.get_game(this.$route.params.id,this.offset / this.perpage, this.perpage);
+    },
+    parseScreenshots(screenshots){
+      if(!screenshots) return [];
+      if(Array.isArray(screenshots)) return screenshots;
+      try{
+        const parsed = JSON.parse(screenshots);
+        return Array.isArray(parsed) ? parsed : []
+      } catch{
+        return [];
+      }
+    },
+    openModal(src){
+      this.modalImage = src;
+      this.modalVisible = true;
     }
   },
   async mounted(){

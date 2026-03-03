@@ -1,18 +1,18 @@
 <template>
   <div v-if="developer && developer.id">
-    <h2>Список игр от разработчиков {{developer.name}}</h2>
-    <table>
-      <thead>
+    <h2 class="text-2xl font-bold mb-4">Список игр от разработчиков <span class="text-gray-500">{{developer.name}}</span></h2>
+    <table class="w-full">
+      <thead class="dark:bg-gray-800">
       <tr>
         <th>ID</th>
         <th>Название</th>
         <th>Оценка пользователей</th>
       </tr>
       </thead>
-      <tbody>
+      <tbody class="divide-y divide-gray-600">
       <tr v-for="game in developer.games" :key="developer.games.id">
-        <td>{{ game.id }}</td>
-        <td>{{ game.title }}</td>
+        <td>{{game.id}}</td>
+        <td><router-link :to="`/games/` + game.id">{{ game.title }}</router-link></td>
         <td>{{ formatRating(game.user_score) }}</td>
       </tr>
       </tbody>
