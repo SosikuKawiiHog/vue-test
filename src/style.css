@@ -4,5 +4,5 @@ body{
 
 /*@tailwind base;*/
 /*@tailwind components;*/
-@import "tailwindcss/preflight";
+@import "tailwindcss";
 @tailwind utilities;

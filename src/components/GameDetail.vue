@@ -1,10 +1,12 @@
 <template>
   <div v-if="dataStore.game && dataStore.game.id">
-    <h2>{{dataStore.game.title}} от {{dataStore.game.developer.name}}</h2>
-    <p>{{dataStore.game.description}}<br>{{formatDate(dataStore.game.release_date)}}</p>
+    <h2 class="text-2xl font-bold mb-2">{{dataStore.game.title}}
+      <span class="text-gray-500 font-normal">от {{dataStore.game.developer.name}}</span>
+    </h2>
+    <p class="text-gray-600 mb-2">{{dataStore.game.description}}<br>{{formatDate(dataStore.game.release_date)}}</p>
     <p>Средняя оценка: <strong>{{formatRating(dataStore.game.user_score)}}</strong></p>
 
-    <h3>Отзывы</h3>
+    <h3>Отзывы ({{dataStore.totalReviews}}):</h3>
     <DataTable
       :value="dataStore.gameReviews"
       :lazy="true"
@@ -53,7 +55,7 @@
     {{dataStore.errorMessage}}
   </div>
   <div v-else>
-    Загрузка...
+    <span class="text-gray-500">Загрузка...</span>
   </div>
 </template>
 
@@ -92,7 +94,7 @@ export default {
     onPageChange(event){
       this.offset = event.first;
       this.perpage = event.rows;
-      this.dataStore.get_game(this.offset / this.perpage, this.perpage);
+      this.dataStore.get_game(this.$route.params.id,this.offset / this.perpage, this.perpage);
     }
   },
   async mounted(){

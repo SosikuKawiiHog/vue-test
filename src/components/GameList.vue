@@ -1,5 +1,5 @@
 <template>
-  <h2>Список игр</h2>
+  <h2 class="text-3xl mb-2">Список игр</h2>
   <div v-if="dataStore.games && dataStore.games.length > 0">
     <DataTable
         :value="dataStore.games"
@@ -12,6 +12,7 @@
         @page="onPageChange"
         responsive-layout="scroll"
         :first="offset"
+        class="mb-4"
     >
         <Column field="id" header="ID"></Column>
         <Column header="Название">
