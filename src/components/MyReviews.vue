@@ -8,6 +8,12 @@
             <router-link :to="`/games/${review.game_id}`">
               {{review.game.title}}
             </router-link>
+            <div class="flex gap-2">
+              <Button icon="pi pi-pencil" size="small" severity="secondary"
+                      @click="$router.push(`/my-reviews/create?edit=${review.id}`)"/>
+              <Button icon="pi pi-trash" size="small" severity="danger"
+                      @click="confirmDelete(review)"/>
+            </div>
           </div>
         </div>
         <span>{{formatRating(review.rating)}}/10</span>
@@ -46,12 +52,21 @@
       &times;
       </button>
   </div>
+  <ConfirmDialog/>
+  <Toast position="bottom-right"/>
 </template>
 
 <script>
+import Button from "primevue/button";
+import ConfirmDialog from "primevue/confirmDialog";
+import Toast from "primevue/toast";
+import {useDataStore} from "@/stores/dataStore.js";
 export default {
+  name: "MyReviews",
+  components: { Button, ConfirmDialog, Toast },
   data(){
     return {
+      dataStore: useDataStore(),
       reviews: [],
       error: null,
       modalVisible: false,
@@ -75,6 +90,25 @@ export default {
     openModal(src){
       this.modalImage = src;
       this.modalVisible = true;
+    },
+    confirmDelete(review){
+      this.$confirm.require({
+        message: `Удалить отзыв на "${review.game.title}?`,
+        header: 'Подтвердить',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Удалить',
+        rejectLabel: 'Отмена',
+        acceptClass: 'p-button-danger',
+        accept: () => this.deleteReview(review.id),
+      });
+    },
+    async deleteReview(id){
+      await this.dataStore.delete_review(id);
+      if(this.dataStore.errorCode === 0){
+        this.reviews = this.reviews.filter(r => r.id !== id);
+        this.$toast.add({severity: 'success', summary: 'Удалено', detail: 'Отзыв удален', life: 3000});
+      }else{
+        this.$toast.add({severity: 'error', summary: 'Ошибка', detail: this.dataStore.errorMessage, life: 4000});     }
     }
   },
   async mounted(){

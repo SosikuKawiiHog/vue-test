@@ -1,5 +1,12 @@
 <template>
   <h2 class="text-3xl mb-2">Список игр</h2>
+
+  <div class="flex gap-2 mb-4">
+    <InputText v-model="search" placeholder="Название игры..."/>
+    <Button label="Найти" icon="pi pi-search" @click="onSearch"/>
+    <Button label="Сбросить" icon="pi pi-times" severity="secondary" @click="onReset"/>
+  </div>
+
   <div v-if="dataStore.games && dataStore.games.length > 0">
     <DataTable
         :value="dataStore.games"
@@ -45,30 +52,24 @@
 <script>
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
 import {useDataStore} from '@/stores/dataStore.js';
 export default {
     name: "GameList",
-    components: {DataTable, Column },
+    components: {DataTable, Column, InputText, Button },
   data(){
     return {
       dataStore: useDataStore(),
       perpage: 5,
       offset: 0,
-    }
-  },
-  computed:{
-    games(){
-      return this.dataStore.games;
-    },
-    games_total(){
-      return this.dataStore.totalGames;
+      search: '',
     }
   },
   mounted(){
     console.log('GameList component mounted.');
     this.dataStore.get_games();
     this.dataStore.get_games_total();
-    console.log('GameList=', this.games);
   },
   methods:{
     formatDate(date){
@@ -79,6 +80,17 @@ export default {
     },
     formatRating(value){
       return value ? Number(value).toFixed(1) : '-';
+    },
+    onSearch(){
+      this.offset = 0;
+      this.dataStore.get_games(0, this.perpage, this.search);
+      this.dataStore.get_games_total(this.search);
+    },
+    onReset(){
+      this.search = '';
+      this.offset = 0;
+      this.dataStore.get_games(0, this.perpage, '');
+      this.dataStore.get_games_total('')
     },
     onPageChange(event){
       this.offset = event.first;

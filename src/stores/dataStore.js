@@ -13,13 +13,14 @@ export const useDataStore = defineStore('data', {
         errorMessage: "",
     }),
     actions: {
-        async get_games(page = 0, perpage = 5){
+        async get_games(page = 0, perpage = 5, search = ''){
             this.errorMessage = "";
             try{
                 const response = await axios.get(backendUrl + '/game', {
                     params: {
                         page: page,
                         perpage: perpage,
+                        search: search
                     }
                 });
                 this.games = response.data;
@@ -37,10 +38,12 @@ export const useDataStore = defineStore('data', {
                 }
             }
         },
-        async get_games_total(){
+        async get_games_total(search = ''){
             this.errorMessage = "";
             try{
-                const response = await axios.get(backendUrl + '/game_total', {});
+                const response = await axios.get(backendUrl + '/game_total', {
+                  params: { search }
+                });
                 this.totalGames = response.data;
             } catch (error) {
                 if(error.response){
@@ -122,6 +125,42 @@ export const useDataStore = defineStore('data', {
             } else {
               this.errorCode = 13;
               console.log(error);
+            }
+          }
+      },
+      async delete_review(id){
+          this.errorMessage = "";
+          try{
+            const response = await axios.delete(`${backendUrl}/reviews/${id}`, {
+              headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`,}
+            });
+            this.errorCode = response.data.code;
+            this.errorMessage = response.data.message;
+          } catch (error) {
+            if(error.response){
+              this.errorCode = 11;
+              this.errorMessage = error.response.data.message;
+            } else if(error.request){
+              this.errorCode = 12;
+              this.errorMessage = error.message;
+            }
+          }
+      },
+      async update_review(id,formData){
+          this.errorMessage = "";
+          try{
+            const response = await axios.post(`${backendUrl}/reviews/${id}`, formData, {
+              headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`}
+            });
+            this.errorCode = response.data.code;
+            this.errorMessage = response.data.message;
+          } catch (error) {
+            if(error.response){
+              this.errorCode = 11;
+              this.errorMessage = error.response.data.message;
+            } else if(error.request){
+              this.errorCode = 12;
+              this.errorMessage = error.message;
             }
           }
       }

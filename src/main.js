@@ -12,6 +12,8 @@ import 'primeicons/primeicons.css';
 
 import {ToastService} from "primevue";
 
+import {ConfirmationService} from "primevue";
+
 const app = createApp(App)
 
 app.use(createPinia())
@@ -27,5 +29,6 @@ app.use(PrimeVue,{
   }
 })
 app.use(ToastService)
+app.use(ConfirmationService)
 
 app.mount('#app')
