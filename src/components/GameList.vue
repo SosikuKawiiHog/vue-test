@@ -95,7 +95,7 @@ export default {
     onPageChange(event){
       this.offset = event.first;
       this.perpage = event.rows;
-      this.dataStore.get_games(this.offset / this.perpage, this.perpage);
+      this.dataStore.get_games(this.offset / this.perpage, this.perpage, this.search);
     }
   },
 }
