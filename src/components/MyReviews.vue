@@ -118,7 +118,7 @@ export default {
       return;
     }
     try{
-      const res = await fetch('http://127.0.0.1:8000/api/reviews', {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/reviews`, {
         headers: {'Authorization': `Bearer ${token}`}
       })
       if(res.ok){
