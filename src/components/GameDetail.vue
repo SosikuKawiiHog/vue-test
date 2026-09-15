@@ -58,6 +58,18 @@
           {{formatDate(slotProps.data.created_at)}}
         </template>
       </Column>
+      <Column header="Действия">
+        <template #body="slotProps">
+          <Button
+            v-if="canDeleteReview(slotProps.data)"
+            icon="pi pi-trash"
+            severity="danger"
+            text
+            rounded
+            @click="confirmDelete(slotProps.data)"
+            />
+        </template>
+      </Column>
     </DataTable>
 
     <Dialog
@@ -84,13 +96,16 @@
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Dialog from "primevue/dialog"
+import Button from "primevue/button"
 import {useDataStore} from '@/stores/dataStore.js';
+import {useAuthStore} from "@/stores/authStore.js";
 export default {
   name: "GameDetail",
-  components: {DataTable, Column, Dialog },
+  components: {DataTable, Column, Dialog, Button },
   data(){
     return {
       dataStore: useDataStore(),
+      authStore: useAuthStore(),
       perpage: 5,
       offset: 0,
       modalVisible: false,
@@ -133,7 +148,34 @@ export default {
     openModal(src){
       this.modalImage = src;
       this.modalVisible = true;
-    }
+    },
+    canDeleteReview(review){
+      const user = this.authStore.user;
+      if(!user) return false;
+      return user.is_admin == 1 || user.id === review.user_id;
+    },
+    async confirmDelete(review) {
+      if (!confirm('Удалить этот отзыв?')) return;
+      try {
+        const res = await fetch(`/api/reviews/${review.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const json = await res.json();
+        if (!res.ok || json.code !== 0) {
+          alert(json.message || 'Ошибка удаления');
+          return;
+        }
+        // обновляем список отзывов и total
+        await this.dataStore.get_game(this.$route.params.id, this.offset / this.perpage, this.perpage);
+        await this.dataStore.get_game_reviews_total(this.$route.params.id);
+      } catch (e) {
+        alert('Ошибка сети: ' + e.message);
+      }
+    },
   },
   async mounted(){
     console.log('GameDetail component mounted.');
