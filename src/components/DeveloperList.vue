@@ -32,7 +32,7 @@ export default {
   },
   async mounted(){
     try{
-      const res = await fetch("http://127.0.0.1:8000/api/developer");
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/developer`);
       this.developers = await res.json();
     } catch(err){
       console.log(err);

@@ -44,7 +44,7 @@ export default {
   async mounted(){
     try{
       const id = this.$route.params.id; //CHTO
-      const res = await fetch(`http://127.0.0.1:8000/api/developer/${id}`)
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/developer/${id}`)
       this.developer = await res.json()
     } catch (error) {
       console.log(error)
