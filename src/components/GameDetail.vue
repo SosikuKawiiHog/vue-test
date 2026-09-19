@@ -157,7 +157,7 @@ export default {
     async confirmDelete(review) {
       if (!confirm('Удалить этот отзыв?')) return;
       try {
-        const res = await fetch(`/api/reviews/${review.id}`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/reviews/${review.id}`, {
           method: 'DELETE',
           headers: {
             'Accept': 'application/json',
