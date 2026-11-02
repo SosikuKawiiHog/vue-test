@@ -35,3 +35,4 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+dist/
