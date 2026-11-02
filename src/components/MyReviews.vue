@@ -58,7 +58,7 @@
 
 <script>
 import Button from "primevue/button";
-import ConfirmDialog from "primevue/confirmDialog";
+import ConfirmDialog from "primevue/ConfirmDialog";
 import Toast from "primevue/toast";
 import {useDataStore} from "@/stores/dataStore.js";
 export default {
