@@ -19,7 +19,7 @@
     </div>
 
     <div class="mb-4">
-      <label for="text" class="block mb-2">Текст отзыва (необязательно0</label>
+      <label for="text" class="block mb-2">Текст отзыва (необязательно)</label>
       <Textarea v-model="text" rows="4" placeholder="Поделитесь своим ОЧЕНЬ ВАЖНЫМ мнением"/>
     </div>
 
